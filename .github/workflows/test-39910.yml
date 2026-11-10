@@ -1,0 +1,14 @@
+name: Test fix for 39910
+on:
+  push:
+    branches: [ci-test-39910]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 3
+      - name: Run before/after test
+        run: bash test_39910.sh
