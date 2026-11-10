@@ -40,7 +40,7 @@ echo "### BEFORE fix: plain repro"
 sage /tmp/repro.sage
 
 echo "### Applying patch from branch to installed module"
-git diff HEAD~2 HEAD~1 -- src/sage/combinat/designs/incidence_structures.py > /tmp/fix.patch
+git diff 34cf369dd4f~1 34cf369dd4f -- src/sage/combinat/designs/incidence_structures.py > /tmp/fix.patch
 patch "$MOD" < /tmp/fix.patch || { echo "PATCH FAILED"; exit 1; }
 
 echo "### AFTER fix: plain repro"
