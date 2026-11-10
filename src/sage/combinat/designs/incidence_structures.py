@@ -1061,15 +1061,17 @@ class IncidenceStructure(SageObject):
         B = self._blocks
         return all(B[i] != B[i + 1] for i in range(len(B) - 1))
 
-    def _gap_init_(self) -> str:
+    def _gap_(self, G=None):
         """
-        Return the GAP string describing the design.
+        Return the design as a record in the GAP interpreter.
+
+        The GAP package ``design`` is loaded first, so it does not have
+        to be loaded by hand before the conversion.
 
         EXAMPLES::
 
             sage: # optional - gap_package_design
             sage: BD = IncidenceStructure(7,[[0,1,2],[0,3,4],[0,5,6],[1,3,5],[1,4,6],[2,3,6],[2,4,5]])
-            sage: gap.load_package("design")
             sage: gap(BD)
             rec(
               blocks := [ [ 1, 2, 3 ], [ 1, 4, 5 ], [ 1, 6, 7 ], [ 2, 4, 6 ],
@@ -1077,9 +1079,33 @@ class IncidenceStructure(SageObject):
               isBlockDesign := true,
               v := 7 )
 
-        TESTS::
+        TESTS:
 
-            sage: BD._gap_init_()  # optional - gap_package_design
+        Check that the package does not need to be loaded beforehand
+        (:issue:`39910`)::
+
+            sage: # optional - gap_package_design
+            sage: gap.quit()
+            sage: gap(BD)
+            rec(
+              blocks := [ [ 1, 2, 3 ], [ 1, 4, 5 ], [ 1, 6, 7 ], [ 2, 4, 6 ],
+                  [ 2, 5, 7 ], [ 3, 4, 7 ], [ 3, 5, 6 ] ],
+              isBlockDesign := true,
+              v := 7 )
+        """
+        if G is None:
+            from sage.interfaces.gap import gap as G
+        G.load_package("design")
+        return super()._gap_(G)
+
+    def _gap_init_(self) -> str:
+        """
+        Return the GAP string describing the design.
+
+        EXAMPLES::
+
+            sage: BD = IncidenceStructure(7,[[0,1,2],[0,3,4],[0,5,6],[1,3,5],[1,4,6],[2,3,6],[2,4,5]])
+            sage: BD._gap_init_()
             'BlockDesign(7,[[1, 2, 3], [1, 4, 5], [1, 6, 7], [2, 4, 6], [2, 5, 7], [3, 4, 7], [3, 5, 6]])'
         """
         v = self.n_points()
